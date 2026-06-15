@@ -1,0 +1,12 @@
+// Prisma Schema — School Communication Organizer
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Business models will be added in future increments.
+// No tables are defined yet.
