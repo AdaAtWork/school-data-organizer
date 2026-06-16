@@ -12,7 +12,6 @@ import {
   UserCircle,
   LogOut,
 } from "lucide-react";
-import { logout } from "@/modules/auth/actions";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -25,7 +24,11 @@ const navItems = [
   { label: "Profile",         href: "/profile",         icon: UserCircle },
 ];
 
-export function Sidebar() {
+export function Sidebar({
+  logoutAction,
+}: {
+  logoutAction: () => Promise<void>;
+}) {
   const pathname = usePathname();
 
   return (
@@ -55,7 +58,7 @@ export function Sidebar() {
       </nav>
 
       <div className="mt-auto">
-        <form action={logout}>
+        <form action={logoutAction}>
           <button
             type="submit"
             className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900"
