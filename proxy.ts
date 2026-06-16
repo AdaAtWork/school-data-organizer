@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+const AUTH_PAGES = new Set(["/login", "/register"]);
+
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -25,9 +27,29 @@ export async function proxy(request: NextRequest) {
     }
   );
 
-  // Required by @supabase/ssr — refreshes the session token on every request
-  // so it never expires while the user is active.
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { pathname } = request.nextUrl;
+  const isAuthPage = AUTH_PAGES.has(pathname);
+
+  // Unauthenticated user accessing a protected page → /login
+  if (!user && !isAuthPage) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  // Authenticated user visiting login/register → /dashboard
+  // Copy session cookies so the token refresh set by setAll isn't lost.
+  if (user && isAuthPage) {
+    const redirectResponse = NextResponse.redirect(
+      new URL("/dashboard", request.url)
+    );
+    supabaseResponse.cookies.getAll().forEach((cookie) => {
+      redirectResponse.cookies.set(cookie.name, cookie.value);
+    });
+    return redirectResponse;
+  }
 
   return supabaseResponse;
 }
