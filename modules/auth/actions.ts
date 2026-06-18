@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { ensureParentWorkspace } from "@/modules/family/ensure-workspace";
 
 export type AuthState = { error: string | null };
 
@@ -17,10 +18,19 @@ export async function login(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
 
   if (error) {
     return { error: "Invalid email or password. Please try again." };
+  }
+
+  try {
+    await ensureParentWorkspace(data.user.id, data.user.email!);
+  } catch (err) {
+    console.error("[auth] Failed to ensure parent workspace on login:", err);
   }
 
   redirect("/dashboard");
@@ -42,10 +52,18 @@ export async function register(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signUp({ email, password });
+  const { data, error } = await supabase.auth.signUp({ email, password });
 
   if (error) {
     return { error: error.message };
+  }
+
+  if (data.user) {
+    try {
+      await ensureParentWorkspace(data.user.id, data.user.email!);
+    } catch (err) {
+      console.error("[auth] Failed to ensure parent workspace on register:", err);
+    }
   }
 
   redirect("/dashboard");
