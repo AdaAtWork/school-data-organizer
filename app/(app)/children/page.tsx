@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { requireCurrentFamilyContext } from "@/modules/family/context";
 import { getActiveChildrenByFamily } from "@/modules/children/queries";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function ChildrenPage() {
@@ -8,11 +10,16 @@ export default async function ChildrenPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-gray-900">Children</h1>
-        <p className="mt-1 text-gray-500">
-          Children profiles linked to your family.
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-gray-900">Children</h1>
+          <p className="mt-1 text-gray-500">
+            Children profiles linked to your family.
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/children/new">Add child</Link>
+        </Button>
       </div>
 
       {childList.length === 0 ? (

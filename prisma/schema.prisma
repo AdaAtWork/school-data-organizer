@@ -53,7 +53,7 @@ model Child {
   id            String    @id @default(cuid())
   familyId      String    @map("family_id")
   firstName     String    @map("first_name")
-  lastName      String    @map("last_name")
+  lastName      String?   @map("last_name")
   preferredName String?   @map("preferred_name")
   birthDate     DateTime? @map("birth_date")
   isArchived    Boolean   @default(false) @map("is_archived")
