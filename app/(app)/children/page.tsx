@@ -36,11 +36,13 @@ export default async function ChildrenPage() {
         <ul className="max-w-md space-y-2">
           {childList.map((child) => (
             <li key={child.id}>
-              <Card>
-                <CardContent className="py-3 text-sm text-gray-900">
-                  {child.preferredName ?? child.firstName} {child.lastName}
-                </CardContent>
-              </Card>
+              <Link href={`/children/${child.id}`} className="block">
+                <Card className="transition-colors hover:bg-gray-50">
+                  <CardContent className="py-3 text-sm text-gray-900">
+                    {child.preferredName ?? child.firstName} {child.lastName}
+                  </CardContent>
+                </Card>
+              </Link>
             </li>
           ))}
         </ul>

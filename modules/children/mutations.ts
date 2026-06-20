@@ -7,6 +7,26 @@ export function validateCreateChildInput(data: {
   return null;
 }
 
+export async function updateChildForFamily(
+  childId: string,
+  familyId: string,
+  data: { firstName: string; lastName?: string | null }
+) {
+  const existing = await db.child.findFirst({
+    where: { id: childId, familyId, isArchived: false },
+  });
+  if (!existing) return null;
+
+  return db.child.update({
+    where: { id: childId },
+    data: {
+      firstName: data.firstName.trim(),
+      lastName: data.lastName?.trim() || null,
+    },
+    select: { id: true, firstName: true, lastName: true, familyId: true },
+  });
+}
+
 export async function createChildForFamily(
   familyId: string,
   data: { firstName: string; lastName?: string | null }
